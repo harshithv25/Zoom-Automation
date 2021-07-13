@@ -10,7 +10,7 @@ import pyperclip
 import win32clipboard
 
 
-def sign_in(meetingId, pswd, topic, name, grade, msgPreference):
+def sign_in(meetingId, pswd, topic):
     subprocess.Popen(
         ["C:\\Users\\Harshith\\AppData\\Roaming\\Zoom\\bin\\Zoom.exe"])
     time.sleep(5)
@@ -47,39 +47,44 @@ def sign_in(meetingId, pswd, topic, name, grade, msgPreference):
     time.sleep(40)
 
     # Types the message
-    win32clipboard.OpenClipboard()
-    data = win32clipboard.GetClipboardData()
-    win32clipboard.CloseClipboard()
-    print(data)
+    # if datetime.now().strftime("%H:%M") > "12:00":
+    #     win32clipboard.OpenClipboard()
+    #     data = win32clipboard.GetClipboardData()
+    #     if f"{name} {grade}, Good afternoon ma'am" in data:
+            # pyperclip.copy(f"{name} {grade}, Good afternoon ma'am")
+    #         win32clipboard.CloseClipboard()
 
-    pyautogui.hotkey("alt", "h")
-    if datetime.now().strftime("%H:%M") > "12:00":
-        pyperclip.copy('The text to be copied to the clipboard.')
+    # else:
+    #     win32clipboard.OpenClipboard()
+    #     data = win32clipboard.GetClipboardData()
+    #     if f"{name} {grade}, Good morning ma'am" in data:
+    #         pyperclip.copy(f"{name} {grade}, Good morning ma'am")
+    #         win32clipboard.CloseClipboard()
 
-        pyautogui.typewrite(f"{name} {grade}, Good afternoon ma'am")
-    else:
-        pyautogui.typewrite("Good morning ma'am, Harshith V 10A")
     time.sleep(10)
     print(f"{topic} done")
 
 
-date = date.today().strftime("%d %m %Y")
-born = datetime.strptime(date, "%d %m %Y").weekday()
-day = calendar.day_name[born]
-df = pd.ExcelFile("timings.xls")
-todays_df = pd.read_excel(df, day)
-print(todays_df)
-
-while True:
+def main():
+    todays_date = date.today().strftime("%d %m %Y")
+    born = datetime.strptime(todays_date, "%d %m %Y").weekday()
+    day = calendar.day_name[born]
+    df = pd.ExcelFile("timings.xls")
+    todays_df = pd.read_excel(df, day)
     name = input("Enter your name: ")
     grade = input("Enter your grade(with your section if you have one): ")
-    msgPreference = input(
-        "Do you prefer to type your message on your own? (Y or N)")
-    current_time = datetime.now().strftime("%H-%M")
-    if current_time in str(todays_df["Timings"]):
-        details = todays_df.loc[todays_df["Timings"] == current_time]
-        meetingId = str(details.iloc[0, 1])
-        meetingPswd = str(details.iloc[0, 2])
-        meetingTopic = str(details.iloc[0, 3])
-        sign_in(meetingId, meetingPswd, meetingTopic,
-                name, grade, msgPreference)
+    pyperclip.copy(f"{name} {grade}, Good afternoon ma'am")
+    pyperclip.copy(f"{name} {grade}, Good morning ma'am")
+    print(todays_df)
+
+    while True:
+        current_time = datetime.now().strftime("%H-%M")
+        if current_time in str(todays_df["Timing"]):
+            details = todays_df.loc[todays_df["Timing"] == current_time]
+            meetingId = str(details.iloc[0, 1])
+            meetingPswd = str(details.iloc[0, 2])
+            meetingTopic = str(details.iloc[0, 3])
+            sign_in(meetingId, meetingPswd, meetingTopic)
+
+if __name__ == '__main__':
+    main()
